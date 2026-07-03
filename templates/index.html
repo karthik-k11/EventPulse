@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventPulse</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>EventPulse</h1>
+
+        <p class="tagline">
+            Automate workflows the moment an event happens.
+        </p>
+
+        <div class="status-box">
+
+            <h2>Folder Selection</h2>
+
+            <form method="POST">
+
+                <input
+                    type="text"
+                    name="folder_path"
+                    placeholder="Enter folder path"
+                    value="{{ selected_folder }}"
+                    style="width:70%;padding:10px;">
+
+                <br><br>
+
+                <button type="submit">
+                    Save Folder
+                </button>
+
+            </form>
+
+            <br>
+
+            <h3>Selected Folder</h3>
+
+            {% if selected_folder %}
+
+            <p>{{ selected_folder }}</p>
+
+            {% else %}
+
+            <p>No folder selected.</p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
