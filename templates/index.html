@@ -34,8 +34,16 @@
 
                 <br><br>
 
-                <button type="submit">
+                <button type="submit" name="action" value="save">
                     Save Folder
+                </button>
+
+                <button type="submit" name="action" value="start">
+                    Start Monitoring
+                </button>
+
+                <button type="submit" name="action" value="stop">
+                    Stop Monitoring
                 </button>
 
             </form>
@@ -51,6 +59,35 @@
             {% else %}
 
             <p>No folder selected.</p>
+
+            {% endif %}
+            <hr>
+
+            <h2>Activity Log</h2>
+
+            {% if activity_log %}
+
+            <table border="1" cellpadding="8" cellspacing="0" style="margin:auto; border-collapse: collapse;">
+
+                <tr>
+                    <th>Event</th>
+                    <th>File Name</th>
+                </tr>
+
+                {% for item in activity_log %}
+
+                <tr>
+                    <td>{{ item.event }}</td>
+                    <td>{{ item.file }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p>No events detected yet.</p>
 
             {% endif %}
 
