@@ -1,6 +1,8 @@
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
+from datetime import datetime
+
 
 observer = None
 
@@ -9,11 +11,13 @@ activity_log = []
 
 def add_event(event_name, file_name):
     activity_log.insert(0, {
+        "time": datetime.now().strftime("%H:%M:%S"),
         "event": event_name,
-        "file": file_name
+        "file": file_name,
+        "action": "No Action"
     })
 
-    # Keep only the latest 20 events
+    ##Keep only the latest 20 events
     if len(activity_log) > 20:
         activity_log.pop()
 
