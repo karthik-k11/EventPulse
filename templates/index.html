@@ -70,15 +70,19 @@
             <table border="1" cellpadding="8" cellspacing="0" style="margin:auto; border-collapse: collapse;">
 
                 <tr>
+                    <th>Time</th>
                     <th>Event</th>
                     <th>File Name</th>
+                    <th>Action Taken</th>
                 </tr>
 
                 {% for item in activity_log %}
 
                 <tr>
+                    <td>{{ item.time }}</td>
                     <td>{{ item.event }}</td>
                     <td>{{ item.file }}</td>
+                    <td>{{ item.action }}</td>
                 </tr>
 
                 {% endfor %}
