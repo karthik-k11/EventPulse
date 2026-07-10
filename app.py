@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request
 from monitor import start_monitoring, stop_monitoring, activity_log
 import os
+from config import create_destination_folders
 
 app = Flask(__name__)
+
+create_destination_folders()
 
 selected_folder = ""
 monitoring = False
