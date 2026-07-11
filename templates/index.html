@@ -2,134 +2,335 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>EventPulse</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            EventPulse
+
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/history">History</a>
+
+            <a href="/settings">Settings</a>
+
+        </div>
+
+    </nav>
+
+    <section class="hero">
 
         <h1>EventPulse</h1>
 
-        <p class="tagline">
+        <p>
+
             Automate workflows the moment an event happens.
+
         </p>
 
-        <div class="status-box">
+    </section>
+    <section class="dashboard">
 
-            <h2>Dashboard</h2>
+        <div class="card">
 
-            <table
-                border="1"
-                cellpadding="10"
-                cellspacing="0"
-                style="margin:auto; border-collapse:collapse; width:100%;">
+            <div class="card-title">
 
-                <tr>
-                   <th>Files Processed</th>
-                  <th>Events Detected</th>
-                  <th>Most Common File Type</th>
-                  <th>Total Actions</th>
-                </tr>
+                Files Processed
 
-                <tr>
-                    <td>{{ files_processed }}</td>
-                    <td>{{ events_detected }}</td>
-                    <td>{{ most_common_file_type }}</td>
-                    <td>{{ total_actions }}</td>
-                </tr>
+            </div>
 
-            </table>
+            <div class="card-value">
+
+                {{ files_processed }}
+
+            </div>
 
         </div>
 
-        <br>
+        <div class="card">
 
-        <div class="status-box">
+            <div class="card-title">
 
-            <h2>Folder Selection</h2>
+                Automations Completed
 
-            <form method="POST">
+            </div>
 
-                <input
-                    type="text"
-                    name="folder_path"
-                    placeholder="Enter folder path"
-                    value="{{ selected_folder }}"
-                    style="width:70%;padding:10px;">
+            <div class="card-value">
 
-                <br><br>
+                {{ automations_completed }}
 
-                <button type="submit" name="action" value="save">
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+
+                Files Skipped
+
+            </div>
+
+            <div class="card-value">
+
+                {{ files_skipped }}
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+
+                Most Processed Type
+
+            </div>
+
+            <div class="card-value">
+
+                {{ most_processed_type }}
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+
+        <h2>
+
+            Monitoring
+
+        </h2>
+
+        <form method="POST">
+
+            <input
+
+                class="folder-input"
+
+                type="text"
+
+                name="folder_path"
+
+                placeholder="Enter folder path"
+
+                value="{{ selected_folder }}">
+
+            <div class="button-group">
+
+                <button
+                    class="save-btn"
+                    type="submit"
+                    name="action"
+                    value="save">
+
                     Save Folder
+
                 </button>
 
-                <button type="submit" name="action" value="start">
+                <button
+                    class="start-btn"
+                    type="submit"
+                    name="action"
+                    value="start">
+
                     Start Monitoring
+
                 </button>
 
-                <button type="submit" name="action" value="stop">
+                <button
+                    class="stop-btn"
+                    type="submit"
+                    name="action"
+                    value="stop">
+
                     Stop Monitoring
+
                 </button>
 
-            </form>
+            </div>
 
-            <br>
+            {% if monitoring %}
 
-            <h3>Selected Folder</h3>
+                <span class="status status-active">
 
-            {% if selected_folder %}
+                    🟢 Monitoring Active
 
-            <p>{{ selected_folder }}</p>
+                </span>
 
             {% else %}
 
-            <p>No folder selected.</p>
+                <span class="status status-stop">
+
+                    🔴 Monitoring Stopped
+
+                </span>
 
             {% endif %}
-            <hr>
 
-            <h2>Activity Log</h2>
+        </form>
 
+    </section>
+
+    <section class="panel">
+
+        <h2>
+
+            Recent Activity
+
+        </h2>
+
+        <div class="activity">
             {% if activity_log %}
 
-            <table border="1" cellpadding="8" cellspacing="0" style="margin:auto; border-collapse: collapse;">
+    {% for item in activity_log %}
 
-                <tr>
-                    <th>Time</th>
-                    <th>Event</th>
-                    <th>File Name</th>
-                    <th>Action Taken</th>
-                </tr>
+        <div class="activity-card">
 
-                {% for item in activity_log %}
+            <h3>
 
-                <tr>
-                    <td>{{ item.time }}</td>
-                    <td>{{ item.event }}</td>
-                    <td>{{ item.file }}</td>
-                    <td>{{ item.action }}</td>
-                </tr>
+                {{ item.file }}
 
-                {% endfor %}
+            </h3>
 
-            </table>
+            <p>
 
-            {% else %}
+                {{ item.action }}
 
-            <p>No events detected yet.</p>
+            </p>
 
-            {% endif %}
+            <div class="time">
+
+                {{ item.time }}
+
+            </div>
 
         </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="activity-card">
+
+        <h3>
+
+            No Activity Yet
+
+        </h3>
+
+        <p>
+
+            Start monitoring a folder to see recent automation activity.
+
+        </p>
 
     </div>
 
+{% endif %}
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+
+        <h2>
+
+            Monitoring Summary
+
+        </h2>
+
+        <div class="dashboard">
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    Selected Folder
+
+                </div>
+
+                <div class="folder-path">
+
+                    {% if selected_folder %}
+
+                        {{ selected_folder }}
+
+                    {% else %}
+
+                        No Folder Selected
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    Monitoring Status
+
+                </div>
+
+                <div class="summary-value">
+
+                    {% if monitoring %}
+
+                        Active
+
+                    {% else %}
+
+                        Stopped
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="footer">
+
+        EventPulse © 2026
+
+        <br><br>
+
+        Automate workflows the moment an event happens.
+        </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</div>
 
 </body>
 

@@ -1,7 +1,9 @@
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
 from pathlib import Path
 from datetime import datetime
+
 from rules import apply_rule
 from db import save_event
 
@@ -10,67 +12,74 @@ observer = None
 activity_log = []
 
 
-def add_event(event_name, file_name, action):
-    activity_log.insert(0, {
-        "time": datetime.now().strftime("%H:%M:%S"),
-        "event": event_name,
-        "file": file_name,
-        "action": action
-    })
-    save_event(
-        datetime.now().strftime("%H:%M:%S"),
-        event_name,
-        file_name,
-        action
+def add_activity(file_name, action):
+
+    activity_log.insert(
+        0,
+        {
+            "time": datetime.now().strftime("%I:%M %p"),
+            "file": file_name,
+            "action": action
+        }
     )
 
     if len(activity_log) > 20:
         activity_log.pop()
 
+    save_event(
+        datetime.now().strftime("%I:%M %p"),
+        file_name,
+        action
+    )
+
 
 class EventHandler(FileSystemEventHandler):
 
     def on_created(self, event):
-        if not event.is_directory:
 
-            file_name = Path(event.src_path).name
+        if event.is_directory:
+            return
 
-            print(f"[CREATED] {event.src_path}")
+        if Path(event.src_path).suffix.lower() == ".txt":
+            return
 
-            action = apply_rule(event.src_path)
+        action = apply_rule(event.src_path)
 
-            add_event("Created", file_name, action)
+        file_name = Path(event.src_path).name
 
-    def on_deleted(self, event):
-        if not event.is_directory:
-            file_name = Path(event.src_path).name
-            print(f"[DELETED] {event.src_path}")
-            add_event("Deleted", file_name, "No Action")
+        add_activity(
+            file_name,
+            action
+        )
 
-    def on_modified(self, event):
-        if not event.is_directory:
-            file_name = Path(event.src_path).name
-            print(f"[MODIFIED] {event.src_path}")
-            add_event("Modified", file_name, "No Action")
+        print(f"[AUTOMATION] {file_name} -> {action}")
 
     def on_moved(self, event):
-        if not event.is_directory:
 
-            old_name = Path(event.src_path).name
-            new_name = Path(event.dest_path).name
+        if event.is_directory:
+            return
 
-            print(f"[RENAMED] {event.src_path} -> {event.dest_path}")
+        new_file = Path(event.dest_path)
 
-            action = apply_rule(event.dest_path)
+        action = apply_rule(event.dest_path)
 
-            add_event(
-                "Renamed",
-                f"{old_name} → {new_name}",
-                action
-            )
+        add_activity(
+            new_file.name,
+            action
+        )
+
+        print(f"[AUTOMATION] {new_file.name} -> {action}")
+
+    ##To ignore modified
+    def on_modified(self, event):
+        pass
+    ##To ignore deleted
+    def on_deleted(self, event):
+        pass
 
 
 def start_monitoring(folder_path):
+
     global observer
 
     if observer is not None:
@@ -79,18 +88,28 @@ def start_monitoring(folder_path):
     event_handler = EventHandler()
 
     observer = Observer()
-    observer.schedule(event_handler, folder_path, recursive=False)
+
+    observer.schedule(
+        event_handler,
+        folder_path,
+        recursive=False
+    )
+
     observer.start()
 
-    print(f"\nMonitoring started: {folder_path}")
+    print(f"\nMonitoring Started : {folder_path}")
 
 
 def stop_monitoring():
+
     global observer
 
     if observer is not None:
+
         observer.stop()
+
         observer.join()
+
         observer = None
 
-        print("\nMonitoring stopped.")
+        print("\nMonitoring Stopped")

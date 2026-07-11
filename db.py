@@ -10,17 +10,15 @@ def initialize_database():
     cursor = connection.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS history (
+        CREATE TABLE IF NOT EXISTS history(
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            time TEXT,
+            time TEXT NOT NULL,
 
-            event TEXT,
+            file_name TEXT NOT NULL,
 
-            file_name TEXT,
-
-            action TEXT
+            action TEXT NOT NULL
 
         )
     """)
@@ -29,18 +27,71 @@ def initialize_database():
     connection.close()
 
 
-def save_event(time, event, file_name, action):
+def save_event(time, file_name, action):
 
     connection = sqlite3.connect(DATABASE_NAME)
 
     cursor = connection.cursor()
 
     cursor.execute("""
-        INSERT INTO history
-        (time, event, file_name, action)
 
-        VALUES (?, ?, ?, ?)
-    """, (time, event, file_name, action))
+        INSERT INTO history
+        (
+            time,
+            file_name,
+            action
+        )
+
+        VALUES (?, ?, ?)
+
+    """, (time, file_name, action))
 
     connection.commit()
+
+    connection.close()
+
+
+def get_history():
+
+    connection = sqlite3.connect(DATABASE_NAME)
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            time,
+
+            file_name,
+
+            action
+
+        FROM history
+
+        ORDER BY id DESC
+
+    """)
+
+    history = cursor.fetchall()
+
+    connection.close()
+
+    return history
+
+
+def clear_history():
+
+    connection = sqlite3.connect(DATABASE_NAME)
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+
+        DELETE FROM history
+
+    """)
+
+    connection.commit()
+
     connection.close()

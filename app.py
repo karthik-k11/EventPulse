@@ -1,10 +1,19 @@
 from flask import Flask, render_template, request
-from monitor import start_monitoring, stop_monitoring, activity_log
-import os
-from config import create_destination_folders
-from db import initialize_database
 from collections import Counter
 from pathlib import Path
+import os
+
+from monitor import (
+    start_monitoring,
+    stop_monitoring,
+    activity_log
+)
+
+from config import create_destination_folders
+from db import (
+    initialize_database,
+    get_history
+)
 
 app = Flask(__name__)
 
@@ -17,6 +26,7 @@ monitoring = False
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+
     global selected_folder
     global monitoring
 
@@ -25,9 +35,11 @@ def home():
         action = request.form.get("action")
 
         if action == "save":
-            selected_folder = request.form.get("folder_path", "").strip()
 
-            selected_folder = selected_folder.strip('"')
+            selected_folder = request.form.get(
+                "folder_path",
+                ""
+            ).strip().strip('"')
 
         elif action == "start":
 
@@ -36,54 +48,88 @@ def home():
                 and os.path.isdir(selected_folder)
                 and not monitoring
             ):
+
                 start_monitoring(selected_folder)
                 monitoring = True
 
         elif action == "stop":
 
             if monitoring:
+
                 stop_monitoring()
                 monitoring = False
 
     files_processed = len(activity_log)
 
-    events_detected = len(activity_log)
-
-    total_actions = sum(
-        1 for item in activity_log
-        if item["action"] != "No Action"
+    automations_completed = sum(
+        1
+        for item in activity_log
+        if item["action"] != "No Rule Matched"
     )
 
-    extensions = []
+    files_skipped = sum(
+        1
+        for item in activity_log
+        if item["action"] == "No Rule Matched"
+    )
+
+    processed_extensions = []
 
     for item in activity_log:
 
-       file_name = item["file"]
+        if item["action"] == "No Rule Matched":
+            continue
 
-       if "→" in file_name:
-            file_name = file_name.split("→")[-1].strip()
+        extension = Path(item["file"]).suffix.lower()
 
-       extension = Path(file_name).suffix.lower()
+        if extension:
+            processed_extensions.append(extension)
 
-       if extension:
-            extensions.append(extension)
+    if processed_extensions:
 
-    if extensions:
-        most_common_file_type = Counter(extensions).most_common(1)[0][0]
+        most_processed_type = Counter(
+            processed_extensions
+        ).most_common(1)[0][0].replace(".", "").upper()
+
     else:
-        most_common_file_type = "-"
+
+        most_processed_type = "-"
 
     return render_template(
+
         "index.html",
+
         selected_folder=selected_folder,
+
         monitoring=monitoring,
+
         activity_log=activity_log,
+
         files_processed=files_processed,
-        events_detected=events_detected,
-        most_common_file_type=most_common_file_type,
-        total_actions=total_actions
+
+        automations_completed=automations_completed,
+
+        files_skipped=files_skipped,
+
+        most_processed_type=most_processed_type
+
+    )
+
+
+@app.route("/history")
+def history():
+
+    history_data = get_history()
+
+    return render_template(
+
+        "history.html",
+
+        history_data=history_data
+
     )
 
 
 if __name__ == "__main__":
+
     app.run(debug=True)

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>EventPulse - History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            EventPulse
+
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/history">History</a>
+
+            <a href="/settings">Settings</a>
+
+        </div>
+
+    </nav>
+
+    <section class="hero">
+
+        <h1>
+
+            Automation History
+
+        </h1>
+
+        <p>
+
+            View every automation performed by EventPulse.
+
+        </p>
+
+    </section>
+
+    <section class="table-container">
+
+        <h2 style="margin-bottom:20px;">
+
+            History
+
+        </h2>
+
+        <table>
+
+            <tr>
+
+                <th>Time</th>
+
+                <th>File</th>
+
+                <th>Result</th>
+
+            </tr>
+
+            {% for row in history_data %}
+
+            <tr>
+
+                <td>
+
+                    {{ row[0] }}
+
+                </td>
+
+                <td>
+
+                    {{ row[1] }}
+
+                </td>
+
+                <td>
+
+                    {{ row[2] }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </section>
+        <div class="footer">
+
+        EventPulse © 2026
+
+        <br><br>
+
+        Automate workflows the moment an event happens.
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
