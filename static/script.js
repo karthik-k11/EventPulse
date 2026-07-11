@@ -1,10 +1,3 @@
-/*
-==========================================
-EventPulse
-Professional UI Script
-==========================================
-*/
-
 document.addEventListener("DOMContentLoaded", () => {
 
     console.log("EventPulse loaded successfully.");
@@ -14,13 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     attachStopConfirmation();
 
 });
-
-
-/*
-==========================================
-Highlight Active Navigation
-==========================================
-*/
 
 function highlightActivePage() {
 
@@ -41,13 +27,6 @@ function highlightActivePage() {
     });
 
 }
-
-
-/*
-==========================================
-Confirm Before Stop Monitoring
-==========================================
-*/
 
 function attachStopConfirmation() {
 
