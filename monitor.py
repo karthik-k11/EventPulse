@@ -3,6 +3,7 @@ from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from datetime import datetime
 from rules import apply_rule
+from db import save_event
 
 observer = None
 
@@ -16,6 +17,12 @@ def add_event(event_name, file_name, action):
         "file": file_name,
         "action": action
     })
+    save_event(
+        datetime.now().strftime("%H:%M:%S"),
+        event_name,
+        file_name,
+        action
+    )
 
     if len(activity_log) > 20:
         activity_log.pop()

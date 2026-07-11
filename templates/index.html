@@ -21,6 +21,36 @@
 
         <div class="status-box">
 
+            <h2>Dashboard</h2>
+
+            <table
+                border="1"
+                cellpadding="10"
+                cellspacing="0"
+                style="margin:auto; border-collapse:collapse; width:100%;">
+
+                <tr>
+                   <th>Files Processed</th>
+                  <th>Events Detected</th>
+                  <th>Most Common File Type</th>
+                  <th>Total Actions</th>
+                </tr>
+
+                <tr>
+                    <td>{{ files_processed }}</td>
+                    <td>{{ events_detected }}</td>
+                    <td>{{ most_common_file_type }}</td>
+                    <td>{{ total_actions }}</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <br>
+
+        <div class="status-box">
+
             <h2>Folder Selection</h2>
 
             <form method="POST">
